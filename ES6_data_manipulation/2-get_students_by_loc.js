@@ -1,3 +1,3 @@
-function getStudentsByLocation(students, city) {
-  return students.filter((student) => student.location === city);
+export function getStudentsByLocation(array, city) {
+  return array.filter((student) => student.location === city);
 }
