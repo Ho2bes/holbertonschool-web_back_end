@@ -1,3 +1,3 @@
 export function hasValuesFromArray(set, array) {
-  return array.every((value) => set.has(value));
+  return array.every((item) => set.has(item));
 }
