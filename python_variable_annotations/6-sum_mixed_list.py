@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-"""sum_list function that takes a list input_list of floats as argument"""
-from typing import List
+"""function sum_mixed_list which takes a list mxd_lst of integers and
+floats and returns their sum as a float"""
 
 
-def sum_list(input_list: List[float]) -> float:
-    """sum_list function"""
-    return sum(input_list)
+from typing import List, Union
+
+
+def sum_mixed_list(mxd_lst: List[Union[int, float]]) -> float:
+    """returns their sum as a float"""
+    return float(sum(mxd_lst))
