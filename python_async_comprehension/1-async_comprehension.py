@@ -2,9 +2,9 @@
 
 """Async comprehension module for Python async comprehension exercise"""
 
-import asyncio
-wait_random = __import__ ('0-async_generator')  # Import async_generator from the previous task
+import typing
+async_generator = __import__('0-async_generator').async_generator
 
-async def async_comprehension():
-    """Collect 10 random numbers using an async comprehensing over async_generator"""
+async def async_comprehension() -> typing.List[float]:
+    """Collect 10 random numbers using async comprehensin gasync_generator"""
     return [number async for number in async_generator()]
