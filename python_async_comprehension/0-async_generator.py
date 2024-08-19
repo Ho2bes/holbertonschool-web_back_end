@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""coroutine that will collect 10 random numbers using an async comprehensing over async_generator"""
+"""coroutine will collect 10 random numbusing async comprehensing """
 
 import asyncio
 import random
