@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-
-"""Async generator module for Python async comprehension exercise"""
+"""coroutine that will collect 10 random numbers using an async comprehensing over async_generator"""
 
 import asyncio
 import random
+import typing
 
-async def async_generator():
+
+async def async_generator() -> typing.Generator[float, None, None]:
     """Async generator that yields 10 random numbers between 0 and 10"""
     for _ in range(10):
         await asyncio.sleep(1)  # Wait 1 second
