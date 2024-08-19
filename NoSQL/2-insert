@@ -1,0 +1,2 @@
+# insert databases
+db.school.insertOne({ "name": "Holberton school" })
