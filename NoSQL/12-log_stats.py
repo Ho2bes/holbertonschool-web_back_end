@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""script that provides some stats about Nginx logs stored in MongoDB"""
+"""Log stats"""
 
 
 from pymongo import MongoClient
 
 
 if __name__ == "__main__":
-    """provide stats about nginx logs"""
+    """provides some stats about Nginx"""
     client = MongoClient('mongodb://127.0.0.1:27017')
     db = client['logs']
     collection = db['nginx']
