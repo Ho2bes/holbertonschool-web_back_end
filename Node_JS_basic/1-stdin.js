@@ -1,19 +1,17 @@
 // Affiche le message de bienvenue
 console.log("Welcome to Holberton School, what is your name?");
 
-// Écoute l'entrée standard (stdin) de l'utilisateur
-process.stdin.on('data', (input) => {
-  // Supprime les espaces autour de l'entrée
-  const name = input.toString().trim();
-
-  // Affiche le nom de l'utilisateur
-  console.log(`Your name is: ${name}`);
-
-  // Ferme le flux d'entrée
-  process.stdin.end();
+// Écoute l'entrée de l'utilisateur
+process.stdin.on('data', (data) => {
+  const input = data.toString().trim(); // Nettoie l'entrée pour supprimer les espaces inutiles
+  console.log(`Your name is: ${input}`); // Affiche le nom de l'utilisateur
 });
 
-// Événement pour la fin de l'entrée
+// Détecte la fin de l'entrée standard
 process.stdin.on('end', () => {
-  console.log("This important software is now closing");
+  console.log("This important software is now closing"); // Affiche le message de fermeture
 });
+
+// S'assure que l'entrée standard reste ouverte pour l'entrée de l'utilisateur
+process.stdin.resume();
+ 
