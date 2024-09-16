@@ -5,16 +5,16 @@ function countStudents(path) {
     // Lire le fichier de manière synchrone
     const data = fs.readFileSync(path, 'utf8');
 
-    // Séparer les lignes du fichier CSV et ignorer les lignes vides
+    // Séparer les lignes du fichier CSV
     const lines = data.split('\n').filter(line => line.trim() !== '');
 
     // Vérifier si le fichier contient des données
-    if (lines.length <= 1) {
+    if (lines.length === 0) {
       throw new Error('Cannot load the database');
     }
 
     // Enlever la première ligne qui contient les en-têtes (firstname, lastname, age, field)
-    lines.shift();
+    const headers = lines.shift();
 
     // Initialiser des objets pour compter les étudiants par domaine
     const studentsByField = {};
@@ -23,13 +23,13 @@ function countStudents(path) {
     for (const line of lines) {
       const [firstname, lastname, age, field] = line.split(',');
 
-      // Vérifier que toutes les informations sont présentes (les 4 champs)
+      // Vérifier que toutes les informations sont bien présentes
       if (firstname && lastname && age && field) {
-        // Si le domaine n'existe pas encore, l'initialiser
+        // Si le domaine n'existe pas encore dans notre objet, l'initialiser
         if (!studentsByField[field]) {
           studentsByField[field] = [];
         }
-        // Ajouter le prénom à la liste des étudiants du domaine
+        // Ajouter l'étudiant à la liste du domaine correspondant
         studentsByField[field].push(firstname);
       }
     }
@@ -44,7 +44,7 @@ function countStudents(path) {
     }
   } catch (error) {
     // En cas d'erreur (par exemple, fichier non trouvé), afficher le message d'erreur
-    console.error('Cannot load the database');
+    throw new Error('Cannot load the database');
   }
 }
 
