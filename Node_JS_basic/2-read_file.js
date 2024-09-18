@@ -1,56 +1,49 @@
+#!/usr/bin/env node
+
 const fs = require('fs');
 
-function countStudents(path) {
-  try {
-    // Lire le fichier de manière synchrone
-    const data = fs.readFileSync(path, 'utf8');
+/**
+ * Counts the students in a CSV data file.
+ * @param {String} dataPath The path to the CSV data file.
+ * @author Bezaleel Olakunori <https://github.com/B3zaleel>
+ */
 
-    // Vérifier si le fichier est vide
-    if (!data) {
-      throw new Error('Cannot load the database');
-    }
-
-    // Séparer les lignes du fichier CSV
-    const lines = data.split('\n').filter(line => line.trim() !== '');
-
-    // Vérifier si le fichier contient au moins une ligne d'en-tête et des données
-    if (lines.length <= 1) {
-      throw new Error('Cannot load the database');
-    }
-
-    // Enlever la première ligne qui contient les en-têtes (firstname, lastname, age, field)
-    const headers = lines.shift(); // On peut ignorer cette valeur dans cette version
-
-    // Initialiser des objets pour compter les étudiants par domaine
-    const studentsByField = {};
-
-    // Traiter chaque ligne
-    for (const line of lines) {
-      const [firstname, lastname, age, field] = line.split(',');
-
-      // Vérifier que toutes les informations sont bien présentes
-      if (firstname && lastname && age && field) {
-        // Si le domaine n'existe pas encore dans notre objet, l'initialiser
-        if (!studentsByField[field]) {
-          studentsByField[field] = [];
-        }
-        // Ajouter l'étudiant à la liste du domaine correspondant
-        studentsByField[field].push(firstname);
-      }
-    }
-
-    // Compter le nombre total d'étudiants
-    const totalStudents = Object.values(studentsByField).reduce((acc, curr) => acc + curr.length, 0);
-    console.log(`Number of students: ${totalStudents}`);
-
-    // Afficher les informations pour chaque domaine
-    for (const [field, students] of Object.entries(studentsByField)) {
-      console.log(`Number of students in ${field}: ${students.length}. List: ${students.join(', ')}`);
-    }
-  } catch (error) {
-    // En cas d'erreur (par exemple, fichier non trouvé ou vide), afficher le message d'erreur
+const countStudents = (dataPath) => {
+  if (!fs.existsSync(dataPath)) {
     throw new Error('Cannot load the database');
   }
-}
+  if (!fs.statSync(dataPath).isFile()) {
+    throw new Error('Cannot load the database');
+  }
+  const fileLines = fs
+    .readFileSync(dataPath, 'utf-8')
+    .toString('utf-8')
+    .trim()
+    .split('\n');
+  const studentGroups = {};
+  const dbFieldNames = fileLines[0].split(',');
+  const studentPropNames = dbFieldNames.slice(0, dbFieldNames.length - 1);
+
+  for (const line of fileLines.slice(1)) {
+    const studentRecord = line.split(',');
+    const studentPropValues = studentRecord.slice(0, studentRecord.length - 1);
+    const field = studentRecord[studentRecord.length - 1];
+    if (!Object.keys(studentGroups).includes(field)) {
+      studentGroups[field] = [];
+    }
+    const studentEntries = studentPropNames
+      .map((propName, idx) => [propName, studentPropValues[idx]]);
+    studentGroups[field].push(Object.fromEntries(studentEntries));
+  }
+
+  const totalStudents = Object
+    .values(studentGroups)
+    .reduce((pre, cur) => (pre || []).length + cur.length);
+  console.log(`Number of students: ${totalStudents}`);
+  for (const [field, group] of Object.entries(studentGroups)) {
+    const studentNames = group.map((student) => student.firstname).join(', ');
+    console.log(`Number of students in ${field}: ${group.length}. List: ${studentNames}`);
+  }
+};
 
 module.exports = countStudents;

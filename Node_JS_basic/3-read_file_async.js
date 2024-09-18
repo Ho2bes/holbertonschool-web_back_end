@@ -1,51 +1,52 @@
-const fs = require('fs').promises;
+#!/usr/bin/env node
 
-async function countStudents(path) {
-  try {
-    // Lire le fichier de manière asynchrone avec fs.promises
-    const data = await fs.readFile(path, 'utf8');
+const fs = require('fs');
 
-    // Séparer les lignes du fichier CSV et ignorer les lignes vides
-    const lines = data.split('\n').filter(line => line.trim() !== '');
+/**
+ * Counts the students in a CSV data file.
+ * @param {String} dataPath The path to the CSV data file.
+ * @author Bezaleel Olakunori <https://github.com/B3zaleel>
+ */
 
-    // Vérifier si le fichier contient des données (ignorer la première ligne avec les en-têtes)
-    if (lines.length <= 1) {
-      throw new Error('Cannot load the database');
+const countStudents = (dataPath) => new Promise((resolve, reject) => {
+  fs.readFile(dataPath, 'utf-8', (err, data) => {
+    if (err) {
+      reject(new Error('Cannot load the database'));
     }
+    if (data) {
+      const fileLines = data
+        .toString('utf-8')
+        .trim()
+        .split('\n');
+      const studentGroups = {};
+      const dbFieldNames = fileLines[0].split(',');
+      const studentPropNames = dbFieldNames
+        .slice(0, dbFieldNames.length - 1);
 
-    // Enlever la première ligne qui contient les en-têtes
-    lines.shift();
-
-    // Initialiser des objets pour compter les étudiants par domaine
-    const studentsByField = {};
-
-    // Traiter chaque ligne
-    for (const line of lines) {
-      const [firstname, lastname, age, field] = line.split(',');
-
-      // Vérifier que toutes les informations sont présentes (les 4 champs)
-      if (firstname && lastname && age && field) {
-        // Si le domaine n'existe pas encore, l'initialiser
-        if (!studentsByField[field]) {
-          studentsByField[field] = [];
+      for (const line of fileLines.slice(1)) {
+        const studentRecord = line.split(',');
+        const studentPropValues = studentRecord
+          .slice(0, studentRecord.length - 1);
+        const field = studentRecord[studentRecord.length - 1];
+        if (!Object.keys(studentGroups).includes(field)) {
+          studentGroups[field] = [];
         }
-        // Ajouter le prénom à la liste des étudiants du domaine
-        studentsByField[field].push(firstname);
+        const studentEntries = studentPropNames
+          .map((propName, idx) => [propName, studentPropValues[idx]]);
+        studentGroups[field].push(Object.fromEntries(studentEntries));
       }
-    }
 
-    // Compter le nombre total d'étudiants
-    const totalStudents = Object.values(studentsByField).reduce((acc, curr) => acc + curr.length, 0);
-    console.log(`Number of students: ${totalStudents}`);
-
-    // Afficher les informations pour chaque domaine
-    for (const [field, students] of Object.entries(studentsByField)) {
-      console.log(`Number of students in ${field}: ${students.length}. List: ${students.join(', ')}`);
+      const totalStudents = Object
+        .values(studentGroups)
+        .reduce((pre, cur) => (pre || []).length + cur.length);
+      console.log(`Number of students: ${totalStudents}`);
+      for (const [field, group] of Object.entries(studentGroups)) {
+        const studentNames = group.map((student) => student.firstname).join(', ');
+        console.log(`Number of students in ${field}: ${group.length}. List: ${studentNames}`);
+      }
+      resolve(true);
     }
-  } catch (error) {
-    // En cas d'erreur (par exemple, fichier non trouvé), afficher le message d'erreur
-    throw new Error('Cannot load the database');
-  }
-}
+  });
+});
 
 module.exports = countStudents;
