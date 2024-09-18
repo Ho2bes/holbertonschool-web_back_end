@@ -5,16 +5,21 @@ function countStudents(path) {
     // Lire le fichier de manière synchrone
     const data = fs.readFileSync(path, 'utf8');
 
+    // Vérifier si le fichier est vide
+    if (!data) {
+      throw new Error('Cannot load the database');
+    }
+
     // Séparer les lignes du fichier CSV
     const lines = data.split('\n').filter(line => line.trim() !== '');
 
-    // Vérifier si le fichier contient des données
-    if (lines.length === 0) {
+    // Vérifier si le fichier contient au moins une ligne d'en-tête et des données
+    if (lines.length <= 1) {
       throw new Error('Cannot load the database');
     }
 
     // Enlever la première ligne qui contient les en-têtes (firstname, lastname, age, field)
-    const headers = lines.shift();
+    const headers = lines.shift(); // On peut ignorer cette valeur dans cette version
 
     // Initialiser des objets pour compter les étudiants par domaine
     const studentsByField = {};
@@ -43,7 +48,7 @@ function countStudents(path) {
       console.log(`Number of students in ${field}: ${students.length}. List: ${students.join(', ')}`);
     }
   } catch (error) {
-    // En cas d'erreur (par exemple, fichier non trouvé), afficher le message d'erreur
+    // En cas d'erreur (par exemple, fichier non trouvé ou vide), afficher le message d'erreur
     throw new Error('Cannot load the database');
   }
 }
