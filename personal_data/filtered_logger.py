@@ -35,14 +35,14 @@ def filter_datum(
         str: The obfuscated log message.
     """
     for field in fields:
-        message = re.sub(rf'{field}=[^{separator}]*',
-                         f'{field}={redaction}', message)
+        message = re.sub(
+            rf'{field}=[^{separator}]*', f'{field}={redaction}', message
+        )
     return message
 
 
 class RedactingFormatter(logging.Formatter):
-    """ Redacting Formatter class
-        """
+    """ Redacting Formatter class """
 
     REDACTION = "***"
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
@@ -60,7 +60,8 @@ class RedactingFormatter(logging.Formatter):
         Format the log record, redacting specified fields.
         """
         record.msg = filter_datum(
-            self.fields, self.REDACTION, record.msg, self.SEPARATOR)
+            self.fields, self.REDACTION, record.msg, self.SEPARATOR
+        )
         return super().format(record)
 
 
@@ -88,13 +89,11 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     Returns:
         mysql.connector.connection.MySQLConnection: Database connector object.
     """
-    # Get credentials from environment variables
     username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
     password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
     host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
     db_name = os.getenv("PERSONAL_DATA_DB_NAME")
 
-    # Connect to the database
     try:
         db = mysql.connector.connect(
             user=username,
@@ -112,32 +111,28 @@ def main():
     """
     Main function to retrieve data from the users table and log it securely.
     """
-    # Configure logger
     logger = get_logger()
-
-    # Connect to database
     db = get_db()
     cursor = db.cursor()
 
     try:
-        # Retrieve all rows from users table
         cursor.execute("SELECT * FROM users")
         rows = cursor.fetchall()
 
-        # Log each row securely
         for row in rows:
-            # Construct the log message
             log_message = "; ".join(
-                [f"{field}={value}" for field, value in zip(
-                    cursor.column_names, row)])
-            log_message += ";"  # Add semicolon at the end
+                [
+                    f"{field}={value}"
+                    for field, value in zip(cursor.column_names, row)
+                ]
+            )
+            log_message += ";"
             logger.info(log_message)
 
     except mysql.connector.Error as err:
         logger.error(f"Error fetching data from MySQL: {err}")
 
     finally:
-        # Clean up resources
         cursor.close()
         db.close()
 
