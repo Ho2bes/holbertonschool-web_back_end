@@ -1,3 +1,4 @@
+-- Content: Create a view named need_meeting that contains the names of students who have a score less than 80 and have not had a meeting in the last month.
 CREATE VIEW need_meeting AS
 SELECT name
 FROM students

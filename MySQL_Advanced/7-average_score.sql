@@ -1,3 +1,4 @@
+-- This script creates a stored procedure that computes the average score for a given user and updates the average_score column in the users table.
 DROP PROCEDURE IF EXISTS ComputeAverageScoreForUser;
 DELIMITER //
 CREATE PROCEDURE ComputeAverageScoreForUser(

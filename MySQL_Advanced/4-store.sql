@@ -1,3 +1,4 @@
+-- Content: MySQL Advanced - Store
 DELIMITER //
 
 CREATE TRIGGER decrease_quantity_after_order

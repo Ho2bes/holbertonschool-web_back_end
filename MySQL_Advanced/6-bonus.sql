@@ -1,3 +1,4 @@
+-- AddBonus(user_id, project_name, score) - adds a bonus to a user for a project
 DELIMITER //
 
 CREATE PROCEDURE AddBonus(IN user_id INT, IN project_name VARCHAR(255), IN score INT)
